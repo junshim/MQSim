@@ -1,0 +1,2 @@
+C:\Users\Dusol LEE\Desktop\SNU\sub-block\MQSIM\[now!] MQSim-Practical-ERS-SUS-master_1126\x64\Debug\MQSim.exe
+C:\Users\Dusol LEE\Desktop\SNU\sub-block\MQSIM\[now!] MQSim-Practical-ERS-SUS-master_1126\x64\Debug\MQSim.pdb
