@@ -5,6 +5,9 @@
 #include "Address_Mapping_Unit_Page_Level.h"
 #include "Stats.h"
 #include "../utils/Logical_Address_Partitioning_Unit.h"
+#include "Qlearning.h"
+
+extern Qlearning* qlearning_unit;
 
 namespace SSD_Components
 {
@@ -603,7 +606,7 @@ namespace SSD_Components
 			}
 			allocate_page_in_plane_for_user_write((NVM_Transaction_Flash_WR*)transaction, false);
 			transaction->Physical_address_determined = true;
-			
+			qlearning_unit->Update_Interval(transaction->Address, Simulator->Time(), transaction->UserIORequest->ID);
 			return true;
 		}
 	}

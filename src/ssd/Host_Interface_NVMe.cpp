@@ -3,6 +3,9 @@
 #include "Host_Interface_NVMe.h"
 #include "NVM_Transaction_Flash_RD.h"
 #include "NVM_Transaction_Flash_WR.h"
+#include "Qlearning.h"
+
+extern Qlearning* qlearning_unit;
 
 namespace SSD_Components
 {
@@ -68,6 +71,7 @@ inline void Input_Stream_Manager_NVMe::Completion_queue_head_pointer_update(stre
 
 inline void Input_Stream_Manager_NVMe::Handle_new_arrived_request(User_Request *request)
 {
+	//qlearning_unit->Update_RW_Ratio(request->Type);
 	((Input_Stream_NVMe *)input_streams[request->Stream_id])->Submission_head_informed_to_host++;
 	if (((Input_Stream_NVMe *)input_streams[request->Stream_id])->Submission_head_informed_to_host == ((Input_Stream_NVMe *)input_streams[request->Stream_id])->Submission_queue_size)
 	{ //Circular queue implementation
@@ -87,6 +91,7 @@ inline void Input_Stream_Manager_NVMe::Handle_new_arrived_request(User_Request *
 		((Input_Stream_NVMe *)input_streams[request->Stream_id])->STAT_number_of_write_requests++;
 		((Host_Interface_NVMe *)host_interface)->request_fetch_unit->Fetch_write_data(request);
 	}
+	
 }
 
 inline void Input_Stream_Manager_NVMe::Handle_arrived_write_data(User_Request *request)
@@ -97,6 +102,9 @@ inline void Input_Stream_Manager_NVMe::Handle_arrived_write_data(User_Request *r
 
 inline void Input_Stream_Manager_NVMe::Handle_serviced_request(User_Request *request)
 {
+	if (request->Type == UserRequestType::WRITE)
+		qlearning_unit->Broadcast_Reward(Simulator->Time() - request->STAT_InitiationTime, request->ID);
+
 	stream_id_type stream_id = request->Stream_id;
 	((Input_Stream_NVMe *)input_streams[request->Stream_id])->Waiting_user_requests.remove(request);
 	((Input_Stream_NVMe *)input_streams[stream_id])->On_the_fly_requests--;
@@ -120,6 +128,8 @@ inline void Input_Stream_Manager_NVMe::Handle_serviced_request(User_Request *req
 			((Input_Stream_NVMe *)input_streams[stream_id])->Submission_head = 0;
 		}
 	}
+
+	sim_time_type Complete_time = Simulator->Time();
 
 	//Check if completion queue is full
 	if (((Input_Stream_NVMe *)input_streams[stream_id])->Completion_head > ((Input_Stream_NVMe *)input_streams[stream_id])->Completion_tail)
@@ -320,6 +330,7 @@ void Request_Fetch_Unit_NVMe::Process_pcie_read_message(uint64_t address, void *
 		break;
 	}
 	delete dma_req_item;
+
 }
 
 void Request_Fetch_Unit_NVMe::Fetch_next_request(stream_id_type stream_id)

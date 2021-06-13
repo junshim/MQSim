@@ -9,9 +9,10 @@
 #include "exec/Host_System.h"
 #include "utils/rapidxml/rapidxml.hpp"
 #include "utils/DistributionTypes.h"
+#include "ssd/Qlearning.h"
 
 using namespace std;
-
+extern Qlearning* qlearning_unit;
 
 void command_line_args(char* argv[], string& input_file_path, string& workload_file_path)
 {
@@ -259,6 +260,8 @@ void print_help()
 
 int main(int argc, char* argv[])
 {
+
+	qlearning_unit = NULL;
 	string ssd_config_file_path, workload_defs_file_path;
 	if (argc != 5) {
 		// MQSim expects 2 arguments: 1) the path to the SSD configuration definition file, and 2) the path to the workload definition file
@@ -288,6 +291,11 @@ int main(int argc, char* argv[])
 			exec_params->Host_Configuration.IO_Flow_Definitions.push_back(*io_flow_def);
 		}
 
+		if (qlearning_unit == NULL)
+			qlearning_unit = new Qlearning(exec_params->SSD_Device_Configuration);
+		else
+			qlearning_unit->Reset();
+
 		SSD_Device ssd(&exec_params->SSD_Device_Configuration, &exec_params->Host_Configuration.IO_Flow_Definitions);//Create SSD_Device based on the specified parameters
 		exec_params->Host_Configuration.Input_file_path = workload_defs_file_path.substr(0, workload_defs_file_path.find_last_of("."));//Create Host_System based on the specified parameters
 		Host_System host(&exec_params->Host_Configuration, exec_params->SSD_Device_Configuration.Enabled_Preconditioning, ssd.Host_interface);
@@ -305,6 +313,8 @@ int main(int argc, char* argv[])
 		PRINT_MESSAGE("Writing results to output file .......");
 		collect_results(ssd, host, (workload_defs_file_path.substr(0, workload_defs_file_path.find_last_of(".")) + "_scenario_" + std::to_string(cntr) + ".xml").c_str());
 	}
+
+	delete qlearning_unit;
     cout << "Simulation complete; Press any key to exit." << endl;
 
 	cin.get(); // Disable if you prefer batch runs

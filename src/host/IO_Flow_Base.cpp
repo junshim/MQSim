@@ -251,6 +251,7 @@ IO_Flow_Base::IO_Flow_Base(const sim_object_id_type &name, uint16_t flow_id, LHA
 		nvme_software_request_queue.erase(cqe->Command_Identifier);
 		available_command_ids.insert(cqe->Command_Identifier);
 		sim_time_type device_response_time = Simulator->Time() - request->Enqueue_time;
+
 		sim_time_type request_delay = Simulator->Time() - request->Arrival_time;
 		STAT_serviced_request_count++;
 		STAT_serviced_request_count_short_term++;
@@ -330,6 +331,7 @@ IO_Flow_Base::IO_Flow_Base(const sim_object_id_type &name, uint16_t flow_id, LHA
 					NVME_UPDATE_SQ_TAIL(nvme_queue_pair);
 				}
 				new_req->Enqueue_time = Simulator->Time();
+
 				pcie_root_complex->Write_to_device(nvme_queue_pair.Submission_tail_register_address_on_device, nvme_queue_pair.Submission_queue_tail);//Based on NVMe protocol definition, the updated tail pointer should be informed to the device
 			} else {
 				break;
@@ -420,6 +422,7 @@ IO_Flow_Base::IO_Flow_Base(const sim_object_id_type &name, uint16_t flow_id, LHA
 						NVME_UPDATE_SQ_TAIL(nvme_queue_pair);
 					}
 					request->Enqueue_time = Simulator->Time();
+
 					pcie_root_complex->Write_to_device(nvme_queue_pair.Submission_tail_register_address_on_device, nvme_queue_pair.Submission_queue_tail);//Based on NVMe protocol definition, the updated tail pointer should be informed to the device
 				}
 				break;

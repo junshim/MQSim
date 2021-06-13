@@ -28,6 +28,9 @@
     <Filter Include="utils\rapidxml">
       <UniqueIdentifier>{338b4a59-3227-4ff1-be87-2a60c6309aa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rl">
+      <UniqueIdentifier>{0d4bcb81-860c-4860-94e4-cbed3d869624}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
@@ -210,6 +213,12 @@
     </ClCompile>
     <ClCompile Include="src\host\SATA_HBA.cpp">
       <Filter>host</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rl\DQL.cpp">
+      <Filter>rl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ssd\Qlearning.cpp">
+      <Filter>ssd</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -474,5 +483,15 @@
     <ClInclude Include="src\ssd\Host_Interface_NVMe_Priorities.h">
       <Filter>ssd</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\rl\DQL.h">
+      <Filter>rl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ssd\Qlearning.h">
+      <Filter>ssd</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MQSim.rc" />
   </ItemGroup>
 </Project>

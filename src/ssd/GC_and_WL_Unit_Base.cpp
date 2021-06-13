@@ -151,6 +151,13 @@ namespace SSD_Components
 				pbke->Blocks[((NVM_Transaction_Flash_WR*)transaction)->RelatedErase->Address.BlockID].Erase_transaction->Page_movement_activities.remove((NVM_Transaction_Flash_WR*)transaction);
 				break;
 			case Transaction_Type::ERASE:
+				//if (pbke->Ongoing_erase_operations.find(transaction->Address.BlockID) == pbke->Ongoing_erase_operations.end())
+				//	break;\
+
+				if (pbke->Ongoing_erase_operations.find(transaction->Address.BlockID) == pbke->Ongoing_erase_operations.end()){
+					//std::cout << "erase ??" << transaction->Address.BlockID << std::endl;
+					break;
+				}
 				pbke->Ongoing_erase_operations.erase(pbke->Ongoing_erase_operations.find(transaction->Address.BlockID));
 				_my_instance->block_manager->Add_erased_block_to_pool(transaction->Address);
 				_my_instance->block_manager->GC_WL_finished(transaction->Address);
